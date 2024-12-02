@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Create and play a new audio object
-      const newAudio = new Audio(`../Sounds/${soundFile}`);
+      const newAudio = new Audio(`Sounds/${soundFile}`); // Adjusted path
       newAudio.play();
 
       // Store the audio object for the button
