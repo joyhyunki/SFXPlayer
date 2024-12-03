@@ -1,17 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const playingSounds = new Set(); // Track currently playing sounds
-  const buttons = document.querySelectorAll('button'); // All sound buttons
+  const playingSounds = new Set();
+  const buttons = document.querySelectorAll('button');
+  const volumeControl = document.getElementById('volume');
+  const volumeValue = document.getElementById('volume-value');
+  
+  // Update volume display and all playing sounds
+  volumeControl.addEventListener('input', () => {
+    const volume = volumeControl.value / 100;
+    volumeValue.textContent = `${volumeControl.value}%`;
+    
+    // Update volume for all playing sounds
+    playingSounds.forEach(info => {
+      info.audio.volume = volume;
+    });
+  });
 
-  // Button click event listener for playing sounds
   buttons.forEach(button => {
     button.addEventListener('click', () => {
-      const soundFile = button.getAttribute('data-sound'); // Get the sound file path
+      const soundFile = button.getAttribute('data-sound');
       const existingSound = Array.from(playingSounds).find(
         info => info.audio.src.endsWith(soundFile.split('/').pop())
       );
 
       if (existingSound) {
-        // If the sound is already playing, stop it
         existingSound.audio.pause();
         existingSound.audio.currentTime = 0;
         playingSounds.delete(existingSound);
@@ -19,29 +30,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Create a new audio element for the sound
       const newAudio = new Audio(soundFile);
-
-      // Play the sound
+      newAudio.volume = volumeControl.value / 100; // Set initial volume
+      
       newAudio.play().catch(error => {
         console.error(`Error playing sound: ${error}`);
       });
 
-      // Add the new sound to the tracking set
       const audioInfo = { audio: newAudio, button };
       playingSounds.add(audioInfo);
-      button.classList.add('active'); // Indicate active button
+      button.classList.add('active');
 
-      // Handle when the sound ends
       newAudio.addEventListener('ended', () => {
         playingSounds.delete(audioInfo);
-        button.classList.remove('active'); // Reset button state
+        button.classList.remove('active');
       });
 
-      // Handle manual stopping (if the user pauses or resets)
       newAudio.addEventListener('pause', () => {
         playingSounds.delete(audioInfo);
-        button.classList.remove('active'); // Reset button state
+        button.classList.remove('active');
       });
     });
   });
