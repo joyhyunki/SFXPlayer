@@ -24,12 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (existingSound) {
+                // If sound is already playing, stop it
                 existingSound.audio.pause();
+                existingSound.audio.currentTime = 0; // Reset to the beginning
                 playingSounds.delete(existingSound);
                 button.classList.remove('active');
                 return;
             }
 
+            // Start playing the sound
             const audio = new Audio(soundFile);
             audio.volume = globalVolume;
             const audioInfo = { audio, button };
@@ -52,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeunload', () => {
         playingSounds.forEach(({ audio }) => {
             audio.pause();
-            audio.src = "";
+            audio.src = ""; // Release resources
         });
         playingSounds.clear();
     });
