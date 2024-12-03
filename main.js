@@ -1,59 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const playingSounds = new Set();
-  const buttons = document.querySelectorAll('button');
-  const volumeSlider = document.getElementById('volume');
-  const volumeValue = document.getElementById('volume-value');
-  
-  // Update volume for all sounds
-  function updateVolume() {
-    const volume = volumeSlider.value;
-    volumeValue.textContent = `${Math.round(volume * 100)}%`;
-    
-    // Update volume for ALL currently playing sounds
-    playingSounds.forEach(audioInfo => {
-      audioInfo.audio.volume = volume;
-    });
-  }
-  
-  // Add volume change listener
-  volumeSlider.addEventListener('input', updateVolume);
+  const playingSounds = new Set(); // Track currently playing sounds
+  const buttons = document.querySelectorAll('button'); // All sound buttons
 
+  // Button click event listener for playing sounds
   buttons.forEach(button => {
     button.addEventListener('click', () => {
-      const soundFile = button.getAttribute('data-sound');
-      
-      // Check if this sound is already playing
+      const soundFile = button.getAttribute('data-sound'); // Get the sound file path
       const existingSound = Array.from(playingSounds).find(
         info => info.audio.src.endsWith(soundFile.split('/').pop())
       );
-      
+
       if (existingSound) {
-        // If sound is playing, stop it
+        // If the sound is already playing, stop it
         existingSound.audio.pause();
         existingSound.audio.currentTime = 0;
         playingSounds.delete(existingSound);
         button.classList.remove('active');
         return;
       }
-      
-      // Create new audio element
+
+      // Create a new audio element for the sound
       const newAudio = new Audio(soundFile);
-      
-      // Set initial volume from slider
-      newAudio.volume = volumeSlider.value;
-      
+
       // Play the sound
       newAudio.play();
-      
-      // Track the sound
-      const audioInfo = { audio: newAudio, button: button };
+
+      // Add the new sound to the tracking set
+      const audioInfo = { audio: newAudio, button };
       playingSounds.add(audioInfo);
-      button.classList.add('active');
-      
-      // Handle sound ending
+      button.classList.add('active'); // Indicate active button
+
+      // Handle when the sound ends
       newAudio.addEventListener('ended', () => {
         playingSounds.delete(audioInfo);
-        button.classList.remove('active');
+        button.classList.remove('active'); // Reset button state
+      });
+
+      // Handle manual stopping (if the user pauses or resets)
+      newAudio.addEventListener('pause', () => {
+        playingSounds.delete(audioInfo);
+        button.classList.remove('active'); // Reset button state
       });
     });
   });
