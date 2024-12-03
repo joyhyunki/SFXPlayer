@@ -1,44 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const activeAudio = new Set();
+  const playingSounds = new Set();
   const buttons = document.querySelectorAll('button');
   const volumeSlider = document.getElementById('volume');
   const volumeValue = document.getElementById('volume-value');
   
-  // Update volume display and all active audio elements
-  volumeSlider.addEventListener('input', () => {
+  // Comprehensive volume control
+  function updateVolume() {
     const volume = volumeSlider.value;
     volumeValue.textContent = `${Math.round(volume * 100)}%`;
     
-    // Update volume for all playing audio
-    activeAudio.forEach(audio => {
-      audio.volume = volume;
+    // Update volume for ALL currently playing sounds
+    playingSounds.forEach(audioInfo => {
+      audioInfo.audio.volume = volume;
     });
-  });
+  }
+  
+  // Add volume change listener
+  volumeSlider.addEventListener('input', updateVolume);
 
   buttons.forEach(button => {
     button.addEventListener('click', () => {
       const soundFile = button.getAttribute('data-sound');
       
-      // Check if this specific audio is already playing
-      const existingAudio = Array.from(activeAudio).find(audio => audio.src.endsWith(soundFile.split('/').pop()));
+      // Check if this sound is already playing
+      const existingSound = Array.from(playingSounds).find(
+        info => info.audio.src.endsWith(soundFile.split('/').pop())
+      );
       
-      if (existingAudio) {
-        existingAudio.pause();
-        existingAudio.currentTime = 0;
-        activeAudio.delete(existingAudio);
+      if (existingSound) {
+        // If sound is playing, stop it
+        existingSound.audio.pause();
+        existingSound.audio.currentTime = 0;
+        playingSounds.delete(existingSound);
         button.classList.remove('active');
         return;
       }
       
+      // Create new audio element
       const newAudio = new Audio(soundFile);
+      
+      // Set initial volume from slider
       newAudio.volume = volumeSlider.value;
+      
+      // Play the sound
       newAudio.play();
       
-      activeAudio.add(newAudio);
+      // Track the sound
+      const audioInfo = { audio: newAudio, button: button };
+      playingSounds.add(audioInfo);
       button.classList.add('active');
       
+      // Handle sound ending
       newAudio.addEventListener('ended', () => {
-        activeAudio.delete(newAudio);
+        playingSounds.delete(audioInfo);
         button.classList.remove('active');
       });
     });
