@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.pause();
         audio.currentTime = 0;
         activeAudio.delete(button);
+        button.classList.remove('active');
         return;
       }
       
@@ -32,9 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
       newAudio.play();
       
       activeAudio.set(button, newAudio);
+      button.classList.add('active');
       
       newAudio.addEventListener('ended', () => {
         activeAudio.delete(button);
+        button.classList.remove('active');
       });
     });
   });
