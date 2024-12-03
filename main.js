@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const newAudio = new Audio(soundFile);
 
       // Play the sound
-      newAudio.play();
+      newAudio.play().catch(error => {
+        console.error(`Error playing sound: ${error}`);
+      });
 
       // Add the new sound to the tracking set
       const audioInfo = { audio: newAudio, button };
