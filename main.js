@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const activeAudio = new Map();
+  const activeAudio = new Set();
   const buttons = document.querySelectorAll('button');
   const volumeSlider = document.getElementById('volume');
   const volumeValue = document.getElementById('volume-value');
@@ -19,11 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const soundFile = button.getAttribute('data-sound');
       
-      if (activeAudio.has(button)) {
-        const audio = activeAudio.get(button);
-        audio.pause();
-        audio.currentTime = 0;
-        activeAudio.delete(button);
+      // Check if this specific audio is already playing
+      const existingAudio = Array.from(activeAudio).find(audio => audio.src.endsWith(soundFile.split('/').pop()));
+      
+      if (existingAudio) {
+        existingAudio.pause();
+        existingAudio.currentTime = 0;
+        activeAudio.delete(existingAudio);
         button.classList.remove('active');
         return;
       }
@@ -32,11 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
       newAudio.volume = volumeSlider.value;
       newAudio.play();
       
-      activeAudio.set(button, newAudio);
+      activeAudio.add(newAudio);
       button.classList.add('active');
       
       newAudio.addEventListener('ended', () => {
-        activeAudio.delete(button);
+        activeAudio.delete(newAudio);
         button.classList.remove('active');
       });
     });
