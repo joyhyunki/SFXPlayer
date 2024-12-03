@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (existingSound) {
                 existingSound.audio.pause();
-                existingSound.audio.currentTime = 0;
                 playingSounds.delete(existingSound);
                 button.classList.remove('active');
                 return;
@@ -44,11 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             audio.addEventListener('ended', () => {
-                playingSounds.delete(audioInfo);
-                button.classList.remove('active');
-            });
-
-            audio.addEventListener('pause', () => {
                 playingSounds.delete(audioInfo);
                 button.classList.remove('active');
             });
