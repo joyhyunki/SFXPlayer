@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update volume for all currently playing sounds
     for (const sound of playingSounds) {
-      sound.audio.volume = globalVolume;
+      sound.audio.volume = globalVolume; // Ensure each sound's volume is updated
     }
   }
 
