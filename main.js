@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const volumeSlider = document.getElementById('volume');
   const volumeValue = document.getElementById('volume-value');
   
-  // Function to update volume for all playing sounds
+  // Comprehensive volume control
   function updateVolume() {
     const volume = volumeSlider.value;
-    volumeValue.textContent = `${Math.round(volume * 100)}%`;
+    volumeValue.textContent = ${Math.round(volume * 100)}%;
     
     // Update volume for ALL currently playing sounds
     playingSounds.forEach(audioInfo => {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Create new audio element
-      const newAudio = new Audio(`Sounds/${soundFile}`);
+      const newAudio = new Audio(soundFile);
       
       // Set initial volume from slider
       newAudio.volume = volumeSlider.value;
