@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Comprehensive volume control
   function updateVolume() {
     const volume = volumeSlider.value;
-    volumeValue.textContent = ${Math.round(volume * 100)}%;
+    volumeValue.textContent = `${Math.round(volume * 100)}%`;
     
     // Update volume for ALL currently playing sounds
     playingSounds.forEach(audioInfo => {
