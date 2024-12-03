@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             const soundFile = button.dataset.sound;
             const existingSound = Array.from(playingSounds).find(
-                info => info.audio.src.includes(soundFile)
+                info => info.button === button
             );
 
             if (existingSound) {
@@ -44,6 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             audio.addEventListener('ended', () => {
+                playingSounds.delete(audioInfo);
+                button.classList.remove('active');
+            });
+
+            audio.addEventListener('pause', () => {
                 playingSounds.delete(audioInfo);
                 button.classList.remove('active');
             });
