@@ -8,14 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateVolume(value) {
         globalVolume = value / 100;
         volumeValue.textContent = `${value}%`;
-
-        // Update volume for all currently playing sounds
         playingSounds.forEach(sound => {
             sound.audio.volume = globalVolume;
         });
     }
 
-    // Initialize volume and add volume control listeners
     updateVolume(volumeSlider.value);
     volumeSlider.addEventListener('input', (e) => updateVolume(e.target.value));
 
@@ -23,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => {
             const soundFile = button.dataset.sound;
             const existingSound = Array.from(playingSounds).find(
-                info => info.audio.src === soundFile // Use full path for comparison
+                info => info.audio.src.includes(soundFile)
             );
 
             if (existingSound) {
@@ -35,14 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const audio = new Audio(soundFile);
-            audio.volume = globalVolume; // Set initial volume
-
+            audio.volume = globalVolume;
             const audioInfo = { audio, button };
             playingSounds.add(audioInfo);
             button.classList.add('active');
 
             audio.play().catch(error => {
                 console.error('Error playing sound:', error);
+                playingSounds.delete(audioInfo);
                 button.classList.remove('active');
             });
 
@@ -50,19 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 playingSounds.delete(audioInfo);
                 button.classList.remove('active');
             });
-
-            audio.addEventListener('pause', () => {
-                playingSounds.delete(audioInfo);
-                button.classList.remove('active');
-            });
         });
     });
 
-    // Clean up playing sounds on page unload
     window.addEventListener('beforeunload', () => {
         playingSounds.forEach(({ audio }) => {
             audio.pause();
-            audio.src = ""; // Release the audio resource
+            audio.src = "";
         });
         playingSounds.clear();
     });
